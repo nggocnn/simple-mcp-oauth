@@ -27,15 +27,17 @@ def _exchange(user: AuthenticatedUser) -> DownstreamCredential:
     }
 
     resp = httpx.post(endpoint, data=data, timeout=config.request_timeout)
-    
+
     if resp.status_code != 200:
         raise RuntimeError(f"Token exchange failed ({resp.status_code}): {resp.text}")
 
     access_token = resp.json()["access_token"]
 
     return DownstreamCredential(
-        authorization_header=f"Bearer {access_token}", acting_as=user.email or user.subject
+        authorization_header=f"Bearer {access_token}",
+        acting_as=user.email or user.subject,
     )
+
 
 def resolve_downstream_credential(user: AuthenticatedUser) -> DownstreamCredential:
     if config.downstream_strategy == "token-exchange":

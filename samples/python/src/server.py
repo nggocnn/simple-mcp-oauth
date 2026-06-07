@@ -88,7 +88,7 @@ class AuthMiddleware:
 
 def build_app() -> Starlette:
     # Streamable HTTP transport served at /mcp (FastMCP "http" transport).
-    mcp_app = mcp.http_app(path="/mcp", transport="http")
+    mcp_app = mcp.http_app(path="/mcp", transport="http", stateless_http=True)
 
     routes = [
         Route(METADATA_PATH, protected_resource_metadata),

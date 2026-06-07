@@ -4,7 +4,7 @@ import json
 import httpx
 
 from contextvars import ContextVar
-from urllib.parse import urlparse
+from urllib.parse import quote_plus
 from fastmcp import FastMCP
 
 from .config import config
@@ -38,14 +38,14 @@ def whoami() -> str:
 
 
 @mcp.tool()
-def api_call() -> str:
+def api_call(query: str) -> str:
     user = current_user.get()
 
     if user is None:
         return "Forbidden: no authenticated user."
 
     if REQUIRED_DOWNSTREAM_ROLE not in user.roles:
-        return f"Forbidden: '{user.email or user.subject} lacks the required '{REQUIRED_DOWNSTREAM_ROLE}' role."
+        return f"Forbidden: {user.email or user.subject} lacks the required '{REQUIRED_DOWNSTREAM_ROLE}' role."
 
     url = f"{config.downstream_base_url}/api/search?q={quote_plus(query)}"
     try:
@@ -58,4 +58,4 @@ def api_call() -> str:
     except Exception as e:
         return f"Downstream call failed: {e}"
 
-    return f"Called {url}\nacting as: {cred.acting_as}\nstatus: {resp.status}\nbody: {resp.text}"
+    return f"Called {url}\nacting as: {cred.acting_as}\nstatus: {resp.status_code}\nbody: {resp.text}"
