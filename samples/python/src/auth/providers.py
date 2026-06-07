@@ -1,9 +1,11 @@
-from dataclasses import dataclass, field
-from typing import Any
+from __future__ import annotations
 
 import httpx
 import jwt
+
 from jwt import PyJWKClient
+from dataclasses import dataclass, field
+from typing import Any
 
 from ..config import config
 
@@ -19,7 +21,7 @@ class AuthenticatedUser:
     email: str | None = None
     scopes: list[str] = field(default_factory=list)
     roles: list[str] = field(default_factory=list)
-    raw_tokens: str = ""
+    raw_token: str = ""
     claims: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
@@ -95,6 +97,6 @@ def verify_access_token(token: str) -> str:
         email=str(claims.get("email")),
         scopes=scope.split() if isinstance(scope, str) else [],
         roles=realm_roles,
-        raw_tokens=token,
+        raw_token=token,
         claims=claims
     )

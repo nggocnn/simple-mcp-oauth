@@ -22,6 +22,12 @@ class Config:
 
     client_id: str = os.environ.get("CLIENT_ID")
     client_secret: str = os.environ.get("CLIENT_SECRET")
+    
+    downstream_strategy: str = os.environ.get("DOWNSTREAM_STRATEGY", "token-exchange")
+    downstream_audience: str = os.environ.get("DOWNSTREAM_AUDIENCE", "downstream-api")
+    downstream_base_url: str = os.environ.get("DOWNSTREAM_BASE_URL")
+    
+    downstream_pat: str = os.environ.get["DOWNSTREAM_PAT", ""]
 
     def audience_matches(self, aud) -> bool:
         if aud is None:
