@@ -27,7 +27,9 @@ class Config:
     downstream_audience: str = os.environ.get("DOWNSTREAM_AUDIENCE", "downstream-api")
     downstream_base_url: str = os.environ.get("DOWNSTREAM_BASE_URL")
     
-    downstream_pat: str = os.environ.get["DOWNSTREAM_PAT", ""]
+    downstream_pat: str = os.environ.get("DOWNSTREAM_PAT", "")
+
+    request_timeout: int = int(os.environ.get("REQUEST_TIMEOUT", "20"))
 
     def audience_matches(self, aud) -> bool:
         if aud is None:

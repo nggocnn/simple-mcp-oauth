@@ -39,7 +39,7 @@ def _discover(issuer: str) -> _Provider:
     if cached:
         return cached
 
-    resp = httpx.get(f"{issuer}/.well-known/openid-configuration", timeout=10)
+    resp = httpx.get(f"{issuer}/.well-known/openid-configuration", timeout=config.request_timeout)
     resp.raise_for_status()
 
     doc = resp.json()

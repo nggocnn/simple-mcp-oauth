@@ -32,8 +32,10 @@ def _exchange(user: AuthenticatedUser) -> DownstreamCredential:
         "requested_token_type": "urn:ietf:params:oauth:token-type:access_token",
     }
 
-    resp = httpx.post(endpoint, data=data, timeout=10)
-    resp.raise_for_status()
+    resp = httpx.post(endpoint, data=data, timeout=config.request_timeout)
+    
+    if resp.status_code != 200:
+        return RuntimeError(f"Token exchange failed ({resp.status_code}): {resp.text}")
 
     access_token = resp.json()["access_token"]
 
