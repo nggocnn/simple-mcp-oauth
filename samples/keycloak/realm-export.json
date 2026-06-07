@@ -1,0 +1,153 @@
+{
+  "realm": "mcp-demo",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "attributes": {
+    "frontendUrl": ""
+  },
+  "roles": {
+    "realm": [
+      {
+        "name": "mcp-user",
+        "description": "Can use the MCP server"
+      },
+      {
+        "name": "downstream-reader",
+        "description": "General read-access role on the downstream API"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "mcp-client",
+      "name": "MCP Client (VS Code / Claude / Cursor)",
+      "description": "Public client used by the MCP client app to log the user in (auth code + PKCE).",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "http://localhost:*",
+        "http://127.0.0.1:*",
+        "https://vscode.dev/redirect",
+        "vscode://*",
+        "cursor://*",
+        "https://claude.ai/*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      },
+      "protocolMappers": [
+        {
+          "name": "mcp-server-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "mcp-server",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "mcp-resource-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "http://localhost:3000/mcp",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "mcp-server",
+      "name": "MCP Server (Resource Server + token-exchange actor)",
+      "description": "Confidential client. Validates tokens and performs RFC 8693 token exchange to call downstreams.",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "mcp-server-secret-change-me",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "attributes": {
+        "standard.token.exchange.enabled": "true",
+        "access.token.lifespan": "900"
+      },
+      "protocolMappers": [
+        {
+          "name": "downstream-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "downstream-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "downstream-api",
+      "name": "Downstream API (downstream service stand-in)",
+      "description": "Represents the protected downstream resource; target audience of token exchange.",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "secret": "downstream-secret-change-me"
+    }
+  ],
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@example.com",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "alice",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "mcp-user",
+        "downstream-reader",
+        "offline_access"
+      ]
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "email": "bob@example.com",
+      "emailVerified": true,
+      "firstName": "Bob",
+      "lastName": "Example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "bob",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "mcp-user",
+        "offline_access"
+      ]
+    }
+  ]
+}
