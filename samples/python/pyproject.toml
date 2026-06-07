@@ -1,0 +1,7 @@
+[project]
+name = "simple-mcp-oauth"
+version = "0.0.1"
+description = "Simple MCP Server with OAuth Token Exchange"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []

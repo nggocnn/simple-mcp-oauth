@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules
+
+# Build output
+dist
+build
+*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Tests & coverage
+coverage
+*.test.ts
+*.spec.ts
+
+# Editor & OS
+.vscode
+.idea
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docs
+README.md
+docs
