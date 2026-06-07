@@ -25,7 +25,7 @@ def whoami() -> str:
     user = current_user.get()
 
     if user is None:
-        return json.dumps({"note": "No OAuth user. Running with PAT."})
+        return json.dumps({"error": "No authenticated user."})
 
     return json.dumps(
         {
@@ -41,7 +41,10 @@ def whoami() -> str:
 def api_call() -> str:
     user = current_user.get()
 
-    if user is not None and REQUIRED_DOWNSTREAM_ROLE not in user.roles:
+    if user is None:
+        return "Forbidden: no authenticated user."
+
+    if REQUIRED_DOWNSTREAM_ROLE not in user.roles:
         return f"Forbidden: '{user.email or user.subject} lacks the required '{REQUIRED_DOWNSTREAM_ROLE}' role."
 
     url = f"{config.downstream_base_url}/api/search?q={quote_plus(query)}"

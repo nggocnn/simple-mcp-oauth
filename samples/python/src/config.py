@@ -14,9 +14,7 @@ class Config:
     resource: str = os.environ.get("RESOURCE")
     port: int = int(os.environ.get("PORT", "3000"))
 
-    auth_mode: str = os.environ.get("AUTH_MODE", "oauth")
-
-    issuers: list[str] = field(default_factory=list)
+    issuers: list[str] = field(default_factory=_issuers)
 
     supported_scopes: list[str] = field(default_factory=lambda: os.environ.get("SUPPORTED_SCOPES", "openid profile email".split()))
 
@@ -26,8 +24,6 @@ class Config:
     downstream_strategy: str = os.environ.get("DOWNSTREAM_STRATEGY", "token-exchange")
     downstream_audience: str = os.environ.get("DOWNSTREAM_AUDIENCE", "downstream-api")
     downstream_base_url: str = os.environ.get("DOWNSTREAM_BASE_URL")
-    
-    downstream_pat: str = os.environ.get("DOWNSTREAM_PAT", "")
 
     request_timeout: int = int(os.environ.get("REQUEST_TIMEOUT", "20"))
 

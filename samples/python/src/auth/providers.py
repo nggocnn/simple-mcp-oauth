@@ -55,7 +55,11 @@ def _discover(issuer: str) -> _Provider:
     return provider
 
 def warm_providers() -> None:
-    pass
+    for issuer in config.issuers:
+        try:
+            _discover(issuer)
+        except Exception as e:
+            pass
 
 def token_endpoint(issuer: str) -> str:
     return _discover(issuer).token_endpoint
