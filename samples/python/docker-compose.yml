@@ -16,11 +16,20 @@ services:
       timeout: 5s
       retries: 20
   
+  mock-api:
+    image: mendhak/http-https-echo:latest
+    environment:
+      HTTP_PORT: "8888"
+    ports:
+      - "8888:8888"
+
   mcp-server:
     build: .
     depends_on:
       keycloak:
         condition: service_healthy
+      mock-api:
+        condition: service_started
     environment:
       PORT: "3000"
       PUBLIC_URL: "http://localhost:3000"
@@ -31,7 +40,7 @@ services:
       CLIENT_SECRET: "mcp-server-secret-change-me"
       DOWNSTREAM_STRATEGY: "token-exchange"
       DOWNSTREAM_AUDIENCE: "downstream-api"
-      DOWNSTREAM_BASE_URL: "https://downstream.example.com"
+      DOWNSTREAM_BASE_URL: "http://mock-api:8888"
       DOWNSTREAM_PAT: "${DOWNSTREAM_PAT:-}"
     ports:
       - "3000:3000"
