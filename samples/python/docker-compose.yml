@@ -38,6 +38,8 @@ services:
       OIDC_ISSUER: "http://localhost:8080/realms/mcp-demo"
       CLIENT_ID: "mcp-server"
       CLIENT_SECRET: "mcp-server-secret-change-me"
+      SUPPORTED_SCOPES: "mcp:tools offline_access"
+      REQUIRED_SCOPES: "mcp:tools"
       DOWNSTREAM_STRATEGY: "token-exchange"
       DOWNSTREAM_AUDIENCE: "downstream-api"
       DOWNSTREAM_BASE_URL: "http://mock-api:8888"

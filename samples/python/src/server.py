@@ -65,6 +65,15 @@ class AuthMiddleware:
             await self._challenge(send, "invalid_token", str(e))
             return
 
+        required = set(config.required_scopes)
+        if required and not required.intersection(user.scopes):
+            await self._challenge(
+                send,
+                "insufficient_scope",
+                f"Token is missing required scope(s): {', '.join(sorted(required))}",
+            )
+            return
+
         reset = current_user.set(user)
         try:
             await self.app(scope, receive, send)

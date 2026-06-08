@@ -20,8 +20,15 @@ class Config:
 
     supported_scopes: list[str] = field(
         default_factory=lambda: os.environ.get(
-            "SUPPORTED_SCOPES", "openid profile email".split()
-        )
+            "SUPPORTED_SCOPES", "openid profile email"
+        ).split()
+    )
+
+    required_scopes: list[str] = field(
+        default_factory=lambda: (
+            os.environ.get("REQUIRED_SCOPES") or
+            os.environ.get("SUPPORTED_SCOPES", "openid profile email")
+        ).split()
     )
 
     client_id: str = os.environ.get("CLIENT_ID")
