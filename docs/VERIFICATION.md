@@ -24,8 +24,11 @@ Contents:
 
 ## 1. Prerequisites: bring the stack up
 
+Pick the sample you want to verify — the two implementations are interchangeable here, expose
+the same endpoints, and pass the same checks below. `cd` into its directory and bring the stack up:
+
 ```bash
-cd samples/python
+cd samples/python        # or: cd samples/typescript
 docker compose up --build
 ```
 
@@ -276,6 +279,10 @@ echoes the request back as JSON, including the forwarded `Authorization` header 
 
 ## 6. Environment verified against
 
-- Docker Engine 29.x, Keycloak 26.3, Python 3.14-slim (server image), `mendhak/http-https-echo:latest` (mock downstream).
-- `fastmcp` >= 3.4.2, `httpx` >= 0.28.1, `pyjwt` >= 2.13.0, `starlette` >= 1.2.1, `uvicorn` >= 0.32.0.
+- Docker Engine 29.x, Keycloak 26.3, `mendhak/http-https-echo:latest` (mock downstream).
+- The checks above are transport-level (plain `curl`) and pass identically against either sample:
+  - **Python** (`samples/python`): Python 3.14-slim server image; `fastmcp` >= 3.4.2,
+    `httpx` >= 0.28.1, `pyjwt` >= 2.13.0, `starlette` >= 1.2.1, `uvicorn` >= 0.32.0.
+  - **TypeScript** (`samples/typescript`): node:24-slim server image; `@modelcontextprotocol/sdk` ^1.20,
+    `express` ^5, `jose` ^6, `zod` ^3.
 - Keycloak 26.3 is required: Standard Token Exchange v2 is only default-enabled from 26.2 onward.
