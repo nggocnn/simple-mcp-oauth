@@ -8,8 +8,8 @@
  * The authenticated user is not passed as a tool argument; it is carried in an
  * {@link AsyncLocalStorage} store that the auth middleware (see `server.ts`)
  * populates for the duration of each request. `currentUser.getStore()` returns
- * it inside a tool, or `undefined`/`null` if the request reached a tool without
- * an authenticated user (e.g. the stdio dev transport).
+ * it inside a tool, or `undefined`/`null` if a tool is somehow reached without
+ * an authenticated user.
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";

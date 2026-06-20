@@ -8,15 +8,11 @@
  * - Everything under `/mcp` is guarded by {@link authMiddleware}, which enforces
  *   a valid, audience-bound, sufficiently-scoped bearer token before the MCP
  *   transport ever sees the request.
- *
- * Pass `--transport stdio` (or the `stdio` arg) to run a local, unauthenticated
- * stdio server instead — handy for development.
  */
 
 import express, { type Request, type Response, type NextFunction } from "express";
 
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 import { config } from "./config.js";
 import { createMcpServer, currentUser } from "./tools.js";
@@ -141,20 +137,8 @@ function buildApp() {
   return app;
 }
 
-/** Run an unauthenticated MCP server over stdio (local development). */
-async function runStdio(): Promise<void> {
-  const server = createMcpServer();
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-}
-
-/** Entry point: choose transport, warm provider caches, then serve. */
+/** Entry point: warm provider caches, then serve over HTTP. */
 async function main(): Promise<void> {
-  if (process.argv.includes("stdio") || process.argv.includes("--transport")) {
-    await runStdio();
-    return;
-  }
-
   await warmProviders();
 
   const app = buildApp();

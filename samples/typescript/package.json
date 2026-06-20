@@ -9,7 +9,6 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "start:stdio": "node dist/server.js --transport stdio",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit"
   },
