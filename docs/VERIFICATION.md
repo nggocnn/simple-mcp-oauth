@@ -52,8 +52,7 @@ This starts Keycloak (realm pre-imported) on `http://localhost:8080`, the MCP se
 
 Identifiers in this realm:
 
-- Resource id (and expected `aud` value): `http://localhost:3000/mcp`
-- Token also carries `aud: mcp-server` (so the server can act as the token-exchange client)
+- Resource id (and expected `aud` value): `http://localhost:3000/mcp` (injected by the `mcp:tools` scope mapper)
 - Downstream audience (exchange target): `downstream-api`
 
 ---
@@ -67,7 +66,7 @@ total; properties 1, 2, 4, and 9 contribute two checks each).
 PASS=0; FAIL=0
 check(){ if [ "$1" = "$2" ]; then echo "  PASS  $3"; PASS=$((PASS+1)); else echo "  FAIL  $3 (got '$1' want '$2')"; FAIL=$((FAIL+1)); fi; }
 tok(){ curl -s http://localhost:8080/realms/mcp-demo/protocol/openid-connect/token \
-  -d grant_type=password -d client_id=mcp-client -d username="$1" -d password="$2" -d scope=openid \
+  -d grant_type=password -d client_id=mcp-client -d username="$1" -d password="$2" -d "scope=openid mcp:tools" \
   | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])'; }
 ALICE=$(tok alice alice); BOB=$(tok bob bob)
 
@@ -145,7 +144,7 @@ Expect `401` and `WWW-Authenticate: Bearer resource_metadata="...oauth-protected
 ```bash
 TOKEN=$(curl -s http://localhost:8080/realms/mcp-demo/protocol/openid-connect/token \
   -d grant_type=password -d client_id=mcp-client \
-  -d username=alice -d password=alice -d scope=openid \
+  -d username=alice -d password=alice -d "scope=openid mcp:tools" \
   | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
 
 echo "$TOKEN" | cut -d. -f2 | python3 -c '
@@ -153,7 +152,7 @@ import sys,base64,json; s=sys.stdin.read().strip(); s+="="*(-len(s)%4)
 print(json.dumps(json.loads(base64.urlsafe_b64decode(s)), indent=2))'
 ```
 
-Confirm `aud` includes `http://localhost:3000/mcp` and `mcp-server`, `sub` is set, and
+Confirm `aud` includes `http://localhost:3000/mcp`, `sub` is set, and
 `realm_access.roles` lists `mcp-user` and `downstream-reader`.
 
 ### 4.4 Reject bad tokens (property 4)
@@ -180,9 +179,9 @@ who(){ curl -s -X POST http://localhost:3000/mcp -H "Authorization: Bearer $1" \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"whoami","arguments":{}}}' \
   | sed 's/^data: //' | grep -E '^\{'; }
 
-ALICE=$(curl -s http://localhost:8080/realms/mcp-demo/protocol/openid-connect/token -d grant_type=password -d client_id=mcp-client -d username=alice -d password=alice -d scope=openid | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
+ALICE=$(curl -s http://localhost:8080/realms/mcp-demo/protocol/openid-connect/token -d grant_type=password -d client_id=mcp-client -d username=alice -d password=alice -d "scope=openid mcp:tools" | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
 
-BOB=$(curl -s http://localhost:8080/realms/mcp-demo/protocol/openid-connect/token -d grant_type=password -d client_id=mcp-client -d username=bob -d password=bob -d scope=openid | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
+BOB=$(curl -s http://localhost:8080/realms/mcp-demo/protocol/openid-connect/token -d grant_type=password -d client_id=mcp-client -d username=bob -d password=bob -d "scope=openid mcp:tools" | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
 who "$ALICE"; who "$BOB"
 ```
 
@@ -256,7 +255,7 @@ The quickest "is it alive and enforcing auth" check:
 # 1) Get a user token (real clients use auth-code + PKCE in a browser)
 TOKEN=$(curl -s http://localhost:8080/realms/mcp-demo/protocol/openid-connect/token \
   -d grant_type=password -d client_id=mcp-client \
-  -d username=alice -d password=alice -d scope=openid \
+  -d username=alice -d password=alice -d "scope=openid mcp:tools" \
   | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
 
 # 2) No token -> 401 + WWW-Authenticate
